@@ -255,6 +255,31 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             </div>
         </section>
 
+        {% if benchmarks %}
+        <!-- Benchmark Results -->
+        <section class="glass-card rounded-3xl p-8 md:p-10">
+            <h2 class="text-2xl font-semibold text-white mb-3">Performance Benchmarks</h2>
+            <p class="text-slate-400 mb-8 max-w-3xl leading-relaxed text-lg">Measured inference performance for models you've benchmarked locally via Ollama.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {% for name, b in benchmarks.items() %}
+                <div class="glass-card rounded-2xl p-6 relative overflow-hidden">
+                    <h3 class="text-lg font-semibold text-white mb-4">{{ name }}</h3>
+                    {% if b.status == "ok" %}
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div><p class="text-slate-400 text-xs uppercase tracking-widest mb-1">Tokens/sec</p><p class="text-white font-bold">{{ b.avg_tokens_per_second }}</p></div>
+                        <div><p class="text-slate-400 text-xs uppercase tracking-widest mb-1">TTFT (s)</p><p class="text-white font-bold">{{ b.avg_ttft_s }}</p></div>
+                        <div><p class="text-slate-400 text-xs uppercase tracking-widest mb-1">Elapsed (s)</p><p class="text-white font-bold">{{ b.avg_elapsed_s }}</p></div>
+                        <div><p class="text-slate-400 text-xs uppercase tracking-widest mb-1">Runs</p><p class="text-white font-bold">{{ b.num_runs }}</p></div>
+                    </div>
+                    {% else %}
+                    <p class="text-amber-400/80 text-sm">Unavailable: {{ b.error }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
         <!-- Step by step instructions -->
         <section class="glass-card rounded-3xl p-8 md:p-10">
             <h2 class="text-2xl font-semibold text-white mb-8">Your Quick Start Guide</h2>
@@ -324,33 +349,46 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 </html>
 """
 
-def generate_outputs(system_profile, cloud_models, local_models, output_dir="."):
+def generate_outputs(system_profile, cloud_models, local_models, output_dir=".", benchmarks=None):
     """
     Generates professional HTML for humans and JSON for systems.
-    Overwrites the files if they already exist.
+    Overwrites the files if they already exist. Existing benchmark results
+    in the JSON config are preserved across regenerations unless overridden.
     """
     html_path = os.path.join(output_dir, "llme_report.html")
     json_path = os.path.join(output_dir, "llme_system_config.json")
-    
+
+    if benchmarks is None:
+        benchmarks = {}
+        if os.path.exists(json_path):
+            with open(json_path, 'r') as f:
+                try:
+                    existing = json.load(f)
+                    benchmarks = existing.get("benchmarks", {})
+                except json.JSONDecodeError:
+                    benchmarks = {}
+
     # 1. Generate JSON for systems
     system_data = {
         "hardware": system_profile,
         "recommendations": {
             "cloud": cloud_models,
             "local": local_models
-        }
+        },
+        "benchmarks": benchmarks
     }
     with open(json_path, 'w') as f:
         json.dump(system_data, f, indent=2)
-        
+
     # 2. Generate HTML for humans
     template = Template(HTML_TEMPLATE)
     rendered_html = template.render(
         system=system_profile,
         cloud_models=cloud_models,
-        local_models=local_models
+        local_models=local_models,
+        benchmarks=benchmarks
     )
     with open(html_path, 'w') as f:
         f.write(rendered_html)
-        
+
     return html_path, json_path
