@@ -6,15 +6,19 @@
     "cpu_cores_physical": 12,
     "cpu_cores_logical": 12,
     "ram_total_gb": 24.0,
-    "ram_available_gb": 5.49,
-    "disk_free_gb": 73.02,
-    "hardware_acceleration": "Apple Silicon (Metal/NPU)"
+    "ram_available_gb": 3.76,
+    "disk_free_gb": 68.38,
+    "gpu_type": "Apple Silicon",
+    "vram_gb": 24.0,
+    "hardware_acceleration": "Apple Silicon (Metal/NPU) - Apple M4 Pro",
+    "driver_version": "26.5.2"
   },
   "recommendations": {
     "cloud": [
       {
-        "name": "Llama 3 70B",
+        "name": "Llama 3.1 70B",
         "provider": "NVIDIA NIM",
+        "api_name": "meta/llama-3.1-70b-instruct",
         "speed": 8,
         "intelligence": 9,
         "ease": 9,
@@ -22,11 +26,13 @@
         "reason": "Excellent balance of reasoning power and fast generation speed on NVIDIA's free tier.",
         "url": "https://build.nvidia.com",
         "domain": "nvidia.com",
+        "last_verified": "2026-08-28",
         "score": 33
       },
       {
         "name": "Mixtral 8x7B",
         "provider": "Groq",
+        "api_name": "mixtral-8x7b-32768",
         "speed": 10,
         "intelligence": 8,
         "ease": 9,
@@ -34,11 +40,13 @@
         "reason": "Runs on Groq's LPU for blazing fast generation speeds, though free limits can be hit quickly.",
         "url": "https://console.groq.com",
         "domain": "groq.com",
+        "last_verified": "2026-08-28",
         "score": 33
       },
       {
-        "name": "Llama 3 8B",
+        "name": "Llama 3.1 8B",
         "provider": "Groq",
+        "api_name": "llama-3.1-8b-instant",
         "speed": 10,
         "intelligence": 7,
         "ease": 10,
@@ -46,11 +54,13 @@
         "reason": "Incredibly fast and lightweight model perfect for instant conversational responses on Groq.",
         "url": "https://console.groq.com",
         "domain": "groq.com",
+        "last_verified": "2026-08-28",
         "score": 33
       },
       {
         "name": "Qwen 2.5 72B",
         "provider": "Together AI",
+        "api_name": "Qwen/Qwen2.5-72B-Instruct-Turbo",
         "speed": 7,
         "intelligence": 9,
         "ease": 8,
@@ -58,11 +68,13 @@
         "reason": "A powerful open-weights model available with generous free credits and high rate limits on Together AI.",
         "url": "https://api.together.ai",
         "domain": "together.ai",
+        "last_verified": "2026-08-28",
         "score": 33
       },
       {
         "name": "Gemma 2 9B",
         "provider": "Hugging Face",
+        "api_name": "google/gemma-2-9b-it",
         "speed": 9,
         "intelligence": 7,
         "ease": 8,
@@ -70,6 +82,7 @@
         "reason": "A highly efficient model from Google that punches far above its weight class on HF free tier.",
         "url": "https://huggingface.co",
         "domain": "huggingface.co",
+        "last_verified": "2026-08-28",
         "score": 32
       }
     ],
@@ -83,7 +96,7 @@
         "reason": "Requires at least 8GB RAM, making it the perfect lightweight but highly capable daily driver for your machine.",
         "url": "https://ollama.com/library/llama3",
         "domain": "ollama.com",
-        "score": 27
+        "score": 28
       },
       {
         "name": "Mistral 7B (Q4)",
@@ -94,7 +107,7 @@
         "reason": "Extremely fast text generation that runs comfortably within your available system memory.",
         "url": "https://ollama.com/library/mistral",
         "domain": "ollama.com",
-        "score": 27
+        "score": 28
       },
       {
         "name": "Phi-3 Mini (4B)",
@@ -105,8 +118,26 @@
         "reason": "Microsoft's tiny powerhouse runs incredibly fast even on older or lower-memory devices.",
         "url": "https://ollama.com/library/phi3",
         "domain": "ollama.com",
-        "score": 27
+        "score": 28
       }
     ]
+  },
+  "benchmarks": {
+    "llama3.2:3b-instruct-q4_K_M": {
+      "model": "llama3.2:3b-instruct-q4_K_M",
+      "status": "ok",
+      "num_runs": 1,
+      "avg_tokens_per_second": 71.49,
+      "avg_ttft_s": 0.087,
+      "avg_elapsed_s": 1.771,
+      "runs": [
+        {
+          "elapsed_s": 1.771,
+          "tokens_per_second": 71.49,
+          "ttft_s": 0.087,
+          "eval_count": 78
+        }
+      ]
+    }
   }
 }
