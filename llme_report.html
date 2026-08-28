@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en" class="antialiased text-slate-300 bg-[#0D1220]">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM+Me: Your Personal AI Model Recommendations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        slate: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#334155', 800: '#1e293b', 900: '#0f172a' },
+                        teal: { 50: '#f0fdfa', 100: '#ccfbf1', 400: '#2dd4bf', 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e' },
+                        navy: { 50: '#f1f4fa', 100: '#e0e6f3', 800: '#182136', 900: '#0D1220' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0D1220;
+            background-image: radial-gradient(circle at top right, rgba(20, 184, 166, 0.05), transparent 40%),
+                              radial-gradient(circle at bottom left, rgba(13, 18, 32, 1), transparent 40%);
+            background-attachment: fixed;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2), inset 0 1px 0 0 rgba(255,255,255,0.05);
+        }
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .card-hover:hover {
+            transform: scale(1.015);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(20, 184, 166, 0.3);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255,255,255,0.1);
+        }
+        .checkbox-custom:checked + label .check-icon { display: block; }
+        .checkbox-custom:checked + label .box-outline { border-color: #14b8a6; background-color: #14b8a6; }
+    </style>
+</head>
+<body class="min-h-screen pt-0 pb-12">
+    
+    <!-- Top Navigation -->
+    <nav class="w-full border-b border-white/5 bg-[#0D1220]/80 backdrop-blur-xl sticky top-0 z-50 mb-12 shadow-sm">
+        <div class="max-w-5xl mx-auto flex items-center justify-between py-5 px-4 md:px-8">
+            <div class="flex items-center space-x-4">
+                <svg class="w-10 h-10 drop-shadow-[0_0_15px_rgba(20,184,166,0.3)]" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision">
+                  <defs>
+                    <linearGradient id="gradS" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#2dd4bf" />
+                      <stop offset="100%" stop-color="#0f766e" />
+                    </linearGradient>
+                    <linearGradient id="gradL" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#14b8a6" />
+                      <stop offset="100%" stop-color="#0d9488" />
+                    </linearGradient>
+                  </defs>
+                  <g id="block-monogram" transform="translate(-4.48, 89.90) scale(1.5100)">
+                    <g id="letter-s" fill="url(#gradS)">
+                      <path d="M 60.00,96.05 L 60.00,50.00 L 106.05,50.00 Z" />
+                      <path d="M 60.00,105.95 L 115.95,50.00 L 170.00,50.00 L 170.00,50.05 L 142.05,78.00 L 88.00,78.00 L 88.00,96.00 L 124.05,96.00 L 60.00,160.05 L 60.00,142.00 L 78.05,142.00 L 96.05,124.00 L 60.00,124.00 Z" />
+                      <path d="M 170.00,59.95 L 170.00,78.00 L 151.95,78.00 L 133.95,96.00 L 170.00,96.00 L 170.00,114.05 L 114.05,170.00 L 60.00,170.00 L 60.00,169.95 L 87.95,142.00 L 142.00,142.00 L 142.00,124.00 L 105.95,124.00 Z" />
+                      <path d="M 170.00,123.95 L 170.00,170.00 L 123.95,170.00 Z" />
+                    </g>
+                    <g id="letter-l" fill="url(#gradL)">
+                      <path d="M 195.00,114.05 L 195.00,50.00 L 223.00,50.00 L 223.00,86.05 Z" />
+                      <path d="M 195.00,123.95 L 223.00,95.95 L 223.00,142.00 L 274.05,142.00 L 246.05,170.00 L 195.00,170.00 Z" />
+                      <path d="M 283.95,142.00 L 285.00,142.00 L 285.00,170.00 L 255.95,170.00 Z" />
+                    </g>
+                  </g>
+                </svg>
+                <span class="text-lg font-bold tracking-[0.2em] text-white uppercase mt-0.5">Seaynic Labs</span>
+            </div>
+            <div class="hidden md:flex items-center text-xs font-semibold uppercase tracking-widest text-slate-300 bg-white/10 px-4 py-2 rounded-full border border-white/10 shadow-inner">
+                <span class="flex h-2 w-2 relative mr-3">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-teal-500"></span>
+                </span>
+                System Scan Complete
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Header -->
+    <header class="max-w-4xl mx-auto mb-20 text-center flex flex-col items-center px-4 relative">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-teal-500/20 rounded-full blur-[120px] pointer-events-none"></div>
+        <div class="inline-flex items-center px-4 py-1.5 rounded-full border border-teal-500/30 bg-teal-500/10 text-teal-300 text-xs font-bold uppercase tracking-widest mb-6 relative z-10 shadow-sm">
+            LLM+Me Engine v2.0
+        </div>
+        <h1 class="text-5xl md:text-7xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-400 mb-8 relative z-10" style="text-wrap: balance;">
+            Your Personalized AI Recommendation Report
+        </h1>
+        <p class="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed relative z-10" style="text-wrap: pretty;">
+            We've scanned your system's hardware and evaluated the latest open-source and commercial models to find the perfect fit for your setup. Here is your starter kit.
+        </p>
+    </header>
+
+    <main class="max-w-4xl mx-auto space-y-10">
+        
+        <!-- Hardware Profile -->
+        <section class="glass-card rounded-3xl p-8 md:p-10">
+            <h2 class="text-2xl font-semibold text-white mb-8 flex items-center">
+                <svg class="w-6 h-6 mr-3 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
+                Your Device Profile
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white/10 p-6 rounded-2xl border border-white/10 shadow-inner">
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2">Operating System</p>
+                    <p class="text-xl font-bold text-white">Darwin (arm64)</p>
+                </div>
+                <div class="bg-white/10 p-6 rounded-2xl border border-white/10 shadow-inner">
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2">Total Memory</p>
+                    <p class="text-xl font-bold text-white">24.0 GB RAM</p>
+                </div>
+                <div class="bg-white/10 p-6 rounded-2xl border border-white/10 shadow-inner">
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2">Acceleration</p>
+                    <p class="text-xl font-bold text-white">Apple Silicon (Metal/NPU)</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cloud Models -->
+        <section class="glass-card rounded-3xl p-8 md:p-10 relative overflow-hidden">
+            <!-- Decorative gradient orb -->
+            <div class="absolute -top-40 -right-40 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <h2 class="text-2xl font-semibold text-white mb-3">Cloud-Hosted AI Models (Free Tiers)</h2>
+            <p class="text-slate-400 mb-8 max-w-3xl leading-relaxed text-lg">These models run on massive supercomputers in the cloud. They are the smartest models available, but require an internet connection. We've selected the best options for you below that offer <strong class="text-white font-semibold">free API tiers</strong>, and factored their rate limits into the final score.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                
+                <div class="glass-card card-hover rounded-2xl p-6 flex flex-col relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-br from-teal-500/0 via-transparent to-teal-500/0 group-hover:from-teal-500/5 group-hover:to-teal-500/5 transition-all pointer-events-none"></div>
+                    
+                    <div class="flex items-center justify-between mb-5 relative z-10">
+                        <a href="https://build.nvidia.com" target="_blank" class="flex items-center text-xl font-semibold text-white hover:text-teal-400 transition-colors">
+                            <div class="w-10 h-10 rounded-xl bg-white p-1.5 flex items-center justify-center mr-4 shadow-lg shrink-0">
+                                <img src="https://www.google.com/s2/favicons?domain=nvidia.com&sz=64" alt="NVIDIA NIM logo" class="w-full h-full object-contain rounded-sm">
+                            </div>
+                            <span class="truncate">Llama 3 70B</span>
+                        </a>
+                    </div>
+                    
+                    <div class="mb-4 relative z-10">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-white/10 text-slate-200 border border-white/20 shadow-sm backdrop-blur-md">
+                            Hosted By: NVIDIA NIM
+                        </span>
+                    </div>
+
+                    <p class="text-sm text-slate-400 flex-grow relative z-10 leading-relaxed">Excellent balance of reasoning power and fast generation speed on NVIDIA's free tier.</p>
+                    
+                    <div class="mt-5 pt-4 border-t border-white/10 flex justify-between items-center relative z-10">
+                        <span class="text-xs font-bold text-teal-400 uppercase tracking-widest">Score: 33</span>
+                    </div>
+                </div>
+                
+                <div class="glass-card card-hover rounded-2xl p-6 flex flex-col relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-br from-teal-500/0 via-transparent to-teal-500/0 group-hover:from-teal-500/5 group-hover:to-teal-500/5 transition-all pointer-events-none"></div>
+                    
+                    <div class="flex items-center justify-between mb-5 relative z-10">
+                        <a href="https://console.groq.com" target="_blank" class="flex items-center text-xl font-semibold text-white hover:text-teal-400 transition-colors">
+                            <div class="w-10 h-10 rounded-xl bg-white p-1.5 flex items-center justify-center mr-4 shadow-lg shrink-0">
+                                <img src="https://www.google.com/s2/favicons?domain=groq.com&sz=64" alt="Groq logo" class="w-full h-full object-contain rounded-sm">
+                            </div>
+                            <span class="truncate">Mixtral 8x7B</span>
+                        </a>
+                    </div>
+                    
+                    <div class="mb-4 relative z-10">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-white/10 text-slate-200 border border-white/20 shadow-sm backdrop-blur-md">
+                            Hosted By: Groq
+                        </span>
+                    </div>
+
+                    <p class="text-sm text-slate-400 flex-grow relative z-10 leading-relaxed">Runs on Groq's LPU for blazing fast generation speeds, though free limits can be hit quickly.</p>
+                    
+                    <div class="mt-5 pt-4 border-t border-white/10 flex justify-between items-center relative z-10">
+                        <span class="text-xs font-bold text-teal-400 uppercase tracking-widest">Score: 33</span>
+                    </div>
+                </div>
+                
+                <div class="glass-card card-hover rounded-2xl p-6 flex flex-col relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-br from-teal-500/0 via-transparent to-teal-500/0 group-hover:from-teal-500/5 group-hover:to-teal-500/5 transition-all pointer-events-none"></div>
+                    
+                    <div class="flex items-center justify-between mb-5 relative z-10">
+                        <a href="https://console.groq.com" target="_blank" class="flex items-center text-xl font-semibold text-white hover:text-teal-400 transition-colors">
+                            <div class="w-10 h-10 rounded-xl bg-white p-1.5 flex items-center justify-center mr-4 shadow-lg shrink-0">
+                                <img src="https://www.google.com/s2/favicons?domain=groq.com&sz=64" alt="Groq logo" class="w-full h-full object-contain rounded-sm">
+                            </div>
+                            <span class="truncate">Llama 3 8B</span>
+                        </a>
+                    </div>
+                    
+                    <div class="mb-4 relative z-10">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-white/10 text-slate-200 border border-white/20 shadow-sm backdrop-blur-md">
+                            Hosted By: Groq
+                        </span>
+                    </div>
+
+                    <p class="text-sm text-slate-400 flex-grow relative z-10 leading-relaxed">Incredibly fast and lightweight model perfect for instant conversational responses on Groq.</p>
+                    
+                    <div class="mt-5 pt-4 border-t border-white/10 flex justify-between items-center relative z-10">
+                        <span class="text-xs font-bold text-teal-400 uppercase tracking-widest">Score: 33</span>
+                    </div>
+                </div>
+                
+                <div class="glass-card card-hover rounded-2xl p-6 flex flex-col relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-br from-teal-500/0 via-transparent to-teal-500/0 group-hover:from-teal-500/5 group-hover:to-teal-500/5 transition-all pointer-events-none"></div>
+                    
+                    <div class="flex items-center justify-between mb-5 relative z-10">
+                        <a href="https://api.together.ai" target="_blank" class="flex items-center text-xl font-semibold text-white hover:text-teal-400 transition-colors">
+                            <div class="w-10 h-10 rounded-xl bg-white p-1.5 flex items-center justify-center mr-4 shadow-lg shrink-0">
+                                <img src="https://www.google.com/s2/favicons?domain=together.ai&sz=64" alt="Together AI logo" class="w-full h-full object-contain rounded-sm">
+                            </div>
+                            <span class="truncate">Qwen 2.5 72B</span>
+                        </a>
+                    </div>
+                    
+                    <div class="mb-4 relative z-10">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-white/10 text-slate-200 border border-white/20 shadow-sm backdrop-blur-md">
+                            Hosted By: Together AI
+                        </span>
+                    </div>
+
+                    <p class="text-sm text-slate-400 flex-grow relative z-10 leading-relaxed">A powerful open-weights model available with generous free credits and high rate limits on Together AI.</p>
+                    
+                    <div class="mt-5 pt-4 border-t border-white/10 flex justify-between items-center relative z-10">
+                        <span class="text-xs font-bold text-teal-400 uppercase tracking-widest">Score: 33</span>
+                    </div>
+                </div>
+                
+                <div class="glass-card card-hover rounded-2xl p-6 flex flex-col relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-br from-teal-500/0 via-transparent to-teal-500/0 group-hover:from-teal-500/5 group-hover:to-teal-500/5 transition-all pointer-events-none"></div>
+                    
+                    <div class="flex items-center justify-between mb-5 relative z-10">
+                        <a href="https://huggingface.co" target="_blank" class="flex items-center text-xl font-semibold text-white hover:text-teal-400 transition-colors">
+                            <div class="w-10 h-10 rounded-xl bg-white p-1.5 flex items-center justify-center mr-4 shadow-lg shrink-0">
+                                <img src="https://www.google.com/s2/favicons?domain=huggingface.co&sz=64" alt="Hugging Face logo" class="w-full h-full object-contain rounded-sm">
+                            </div>
+                            <span class="truncate">Gemma 2 9B</span>
+                        </a>
+                    </div>
+                    
+                    <div class="mb-4 relative z-10">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-white/10 text-slate-200 border border-white/20 shadow-sm backdrop-blur-md">
+                            Hosted By: Hugging Face
+                        </span>
+                    </div>
+
+                    <p class="text-sm text-slate-400 flex-grow relative z-10 leading-relaxed">A highly efficient model from Google that punches far above its weight class on HF free tier.</p>
+                    
+                    <div class="mt-5 pt-4 border-t border-white/10 flex justify-between items-center relative z-10">
+                        <span class="text-xs font-bold text-teal-400 uppercase tracking-widest">Score: 32</span>
+                    </div>
+                </div>
+                
+            </div>
+        </section>
+
+        <!-- Local Models -->
+        <section class="glass-card rounded-3xl p-8 md:p-10 relative overflow-hidden">
+            <!-- Decorative gradient orb -->
+            <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <h2 class="text-2xl font-semibold text-white mb-3">Local AI Models</h2>
+            <p class="text-slate-400 mb-8 max-w-3xl leading-relaxed text-lg">These models run entirely on your own device. They offer total privacy and work completely offline. Because they use your computer's hardware, we've filtered this list to <strong class="text-white font-semibold">only</strong> include models that will run fast and smoothly on your specific machine.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                
+                <div class="glass-card card-hover rounded-2xl p-6 flex flex-col relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/0 via-transparent to-indigo-500/0 group-hover:from-indigo-500/5 group-hover:to-indigo-500/5 transition-all pointer-events-none"></div>
+                    
+                    <div class="flex items-center justify-between mb-5 relative z-10">
+                        <a href="https://ollama.com/library/llama3" target="_blank" class="flex items-center text-xl font-semibold text-white hover:text-indigo-400 transition-colors">
+                            <div class="w-10 h-10 rounded-xl bg-white p-1.5 flex items-center justify-center mr-4 shadow-lg shrink-0">
+                                <img src="https://www.google.com/s2/favicons?domain=ollama.com&sz=64" alt="Local model logo" class="w-full h-full object-contain rounded-sm">
+                            </div>
+                            <span class="truncate">Llama 3 8B (Q4)</span>
+                        </a>
+                    </div>
+
+                    <div class="mb-4 relative z-10">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shadow-sm backdrop-blur-md">
+                            <svg class="w-4 h-4 mr-1.5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                            8GB RAM OK
+                        </span>
+                    </div>
+
+                    <p class="text-sm text-slate-400 flex-grow relative z-10 leading-relaxed">Requires at least 8GB RAM, making it the perfect lightweight but highly capable daily driver for your machine.</p>
+                </div>
+                
+                <div class="glass-card card-hover rounded-2xl p-6 flex flex-col relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/0 via-transparent to-indigo-500/0 group-hover:from-indigo-500/5 group-hover:to-indigo-500/5 transition-all pointer-events-none"></div>
+                    
+                    <div class="flex items-center justify-between mb-5 relative z-10">
+                        <a href="https://ollama.com/library/mistral" target="_blank" class="flex items-center text-xl font-semibold text-white hover:text-indigo-400 transition-colors">
+                            <div class="w-10 h-10 rounded-xl bg-white p-1.5 flex items-center justify-center mr-4 shadow-lg shrink-0">
+                                <img src="https://www.google.com/s2/favicons?domain=ollama.com&sz=64" alt="Local model logo" class="w-full h-full object-contain rounded-sm">
+                            </div>
+                            <span class="truncate">Mistral 7B (Q4)</span>
+                        </a>
+                    </div>
+
+                    <div class="mb-4 relative z-10">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shadow-sm backdrop-blur-md">
+                            <svg class="w-4 h-4 mr-1.5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                            8GB RAM OK
+                        </span>
+                    </div>
+
+                    <p class="text-sm text-slate-400 flex-grow relative z-10 leading-relaxed">Extremely fast text generation that runs comfortably within your available system memory.</p>
+                </div>
+                
+                <div class="glass-card card-hover rounded-2xl p-6 flex flex-col relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/0 via-transparent to-indigo-500/0 group-hover:from-indigo-500/5 group-hover:to-indigo-500/5 transition-all pointer-events-none"></div>
+                    
+                    <div class="flex items-center justify-between mb-5 relative z-10">
+                        <a href="https://ollama.com/library/phi3" target="_blank" class="flex items-center text-xl font-semibold text-white hover:text-indigo-400 transition-colors">
+                            <div class="w-10 h-10 rounded-xl bg-white p-1.5 flex items-center justify-center mr-4 shadow-lg shrink-0">
+                                <img src="https://www.google.com/s2/favicons?domain=ollama.com&sz=64" alt="Local model logo" class="w-full h-full object-contain rounded-sm">
+                            </div>
+                            <span class="truncate">Phi-3 Mini (4B)</span>
+                        </a>
+                    </div>
+
+                    <div class="mb-4 relative z-10">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shadow-sm backdrop-blur-md">
+                            <svg class="w-4 h-4 mr-1.5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                            4GB RAM OK
+                        </span>
+                    </div>
+
+                    <p class="text-sm text-slate-400 flex-grow relative z-10 leading-relaxed">Microsoft's tiny powerhouse runs incredibly fast even on older or lower-memory devices.</p>
+                </div>
+                
+            </div>
+        </section>
+
+        <!-- Multi-Model Routers -->
+        <section class="glass-card rounded-3xl p-8 md:p-10">
+            <h2 class="text-2xl font-semibold text-white mb-3">Multi-Model Routers (Bring Your Own AI)</h2>
+            <p class="text-slate-400 mb-8 max-w-3xl leading-relaxed text-lg">At Seaynic Labs, our products are <strong class="text-white font-semibold">BYO-AI</strong> (Bring Your Own AI). To make this seamless, we highly recommend using a "Multi-Model Router". These tools let you swap between local and cloud models effortlessly, combining all your keys into a single, unified interface.</p>
+            
+            <div class="space-y-5">
+                <div class="glass-card card-hover p-6 rounded-2xl relative group">
+                    <div class="flex flex-col md:flex-row md:items-start">
+                        <div class="w-12 h-12 rounded-xl bg-white/10 text-white flex items-center justify-center font-bold text-xl mr-5 shrink-0 shadow-inner border border-white/20 mb-4 md:mb-0">L</div>
+                        <div class="flex-grow">
+                            <h3 class="text-xl font-semibold text-white"><a href="https://litellm.ai/" target="_blank" class="hover:text-teal-400 transition-colors">LiteLLM (Local Proxy)</a></h3>
+                            <p class="text-slate-400 text-sm mt-2 leading-relaxed">LiteLLM runs locally on your machine and translates over 100+ AI providers (including Ollama, Groq, NVIDIA, and Hugging Face) into the standard OpenAI format. It's the ultimate tool for seamless BYO-AI.</p>
+                            <div class="mt-4 bg-black/40 rounded-xl p-4 border border-white/5">
+                                <code class="text-sm font-mono text-teal-300 block mb-1">pip install litellm</code>
+                                <code class="text-sm font-mono text-teal-300 block">litellm --model ollama/llama3</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card card-hover p-6 rounded-2xl relative group">
+                    <div class="flex flex-col md:flex-row md:items-start">
+                        <div class="w-12 h-12 rounded-xl bg-white/10 text-white flex items-center justify-center font-bold text-xl mr-5 shrink-0 shadow-inner border border-white/20 mb-4 md:mb-0">O</div>
+                        <div class="flex-grow">
+                            <h3 class="text-xl font-semibold text-white"><a href="https://openrouter.ai/" target="_blank" class="hover:text-teal-400 transition-colors">OpenRouter (Cloud Router)</a></h3>
+                            <p class="text-slate-400 text-sm mt-2 leading-relaxed">If you prefer a cloud solution without local installation, OpenRouter is a unified API that automatically routes your requests to the cheapest and fastest cloud models available, including many free tiers.</p>
+                            <div class="mt-4 bg-black/40 rounded-xl p-4 border border-white/5">
+                                <code class="text-sm font-mono text-teal-300 block">Sign up at openrouter.ai and generate a single API key to access hundreds of models.</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card card-hover p-6 rounded-2xl relative group bg-indigo-500/5 border-indigo-500/20">
+                    <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/0 via-transparent to-indigo-500/5 group-hover:opacity-100 opacity-0 transition-opacity rounded-2xl pointer-events-none"></div>
+                    <div class="flex flex-col md:flex-row md:items-start relative z-10">
+                        <div class="w-12 h-12 rounded-xl bg-indigo-500 text-white flex items-center justify-center font-bold text-xl mr-5 shrink-0 shadow-[0_4px_16px_rgba(99,102,241,0.4)] mb-4 md:mb-0">⚡</div>
+                        <div class="flex-grow">
+                            <h3 class="text-xl font-semibold text-white">The Ultimate Setup: True Agility</h3>
+                            <p class="text-indigo-200/80 text-sm mt-2 leading-relaxed">For maximum agility, you can run LiteLLM locally and connect it directly to OpenRouter! This gives you a single local address (<code class="text-xs bg-indigo-500/20 text-indigo-300 px-1.5 py-0.5 rounded border border-indigo-500/30">localhost:4000</code>) that acts as the ultimate gateway. You can instantly hot-swap between offline Ollama models and massive cloud OpenRouter models right from your terminal—without ever needing to change the API settings in your apps again.</p>
+                            <div class="mt-4 bg-black/40 rounded-xl p-4 border border-indigo-500/20 shadow-inner">
+                                <code class="text-sm font-mono text-indigo-300 block mb-1">export OPENROUTER_API_KEY="sk-..."</code>
+                                <code class="text-sm font-mono text-indigo-300 block">litellm --model openrouter/meta-llama/llama-3-8b-instruct</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step by step instructions -->
+        <section class="glass-card rounded-3xl p-8 md:p-10">
+            <h2 class="text-2xl font-semibold text-white mb-8">Your Quick Start Guide</h2>
+            <div class="space-y-6">
+                
+                <div class="relative flex items-start group">
+                    <input type="checkbox" id="step1" class="checkbox-custom absolute opacity-0 w-0 h-0">
+                    <label for="step1" class="flex items-start cursor-pointer select-none w-full">
+                        <div class="box-outline flex-shrink-0 w-7 h-7 border-2 border-white/20 rounded-md mr-5 mt-1 transition-colors group-hover:border-teal-500 relative flex items-center justify-center bg-white/5">
+                            <svg class="check-icon hidden w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-lg font-medium text-white">1. Choose Your Engine (Local vs. Cloud)</p>
+                            <p class="text-slate-400 text-sm mt-2 leading-relaxed">If you want maximum privacy and offline capability, download <a href="https://ollama.com" target="_blank" class="text-teal-400 font-medium hover:text-teal-300 hover:underline">Ollama</a>. If you prefer using massive cloud supercomputers without downloading anything, create a free account at <a href="https://openrouter.ai" target="_blank" class="text-teal-400 font-medium hover:text-teal-300 hover:underline">OpenRouter</a> and copy your "API Key".</p>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="relative flex items-start group">
+                    <input type="checkbox" id="step2" class="checkbox-custom absolute opacity-0 w-0 h-0">
+                    <label for="step2" class="flex items-start cursor-pointer select-none w-full">
+                        <div class="box-outline flex-shrink-0 w-7 h-7 border-2 border-white/20 rounded-md mr-5 mt-1 transition-colors group-hover:border-teal-500 relative flex items-center justify-center bg-white/5">
+                            <svg class="check-icon hidden w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-lg font-medium text-white">2. Start Your AI</p>
+                            <p class="text-slate-400 text-sm mt-2 leading-relaxed">If you are using Ollama, open your computer's Terminal app and type: <br><code class="mt-3 inline-block px-4 py-2 bg-black/40 text-teal-300 rounded-lg font-mono text-sm border border-white/10 shadow-inner">ollama run llama</code><br><em class="block mt-3 text-amber-400/80">Note: You must leave this black window open while using the AI!</em></p>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="relative flex items-start group">
+                    <input type="checkbox" id="step3" class="checkbox-custom absolute opacity-0 w-0 h-0">
+                    <label for="step3" class="flex items-start cursor-pointer select-none w-full">
+                        <div class="box-outline flex-shrink-0 w-7 h-7 border-2 border-white/20 rounded-md mr-5 mt-1 transition-colors group-hover:border-teal-500 relative flex items-center justify-center bg-white/5">
+                            <svg class="check-icon hidden w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-lg font-medium text-white">3. Connect to Any Application</p>
+                            <p class="text-slate-400 text-sm mt-2 leading-relaxed">Open your favorite Bring-Your-Own-AI (BYO-AI) software and look for the "AI Settings" or "API Configuration" page. Plug in these standard settings:</p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
+                                <div class="bg-white/10 p-5 rounded-xl border border-white/10 shadow-inner">
+                                    <p class="text-xs font-bold text-slate-300 uppercase tracking-widest mb-3">If using Local (Ollama)</p>
+                                    <p class="text-sm text-slate-400"><span class="font-medium text-white">URL:</span> <br><code class="mt-1 block px-3 py-2 bg-black/40 rounded text-teal-300 border border-white/5 font-mono shadow-inner">http://localhost:11434/v1</code></p>
+                                    <p class="text-sm text-slate-400 mt-3"><span class="font-medium text-white">Key:</span> <br><code class="mt-1 block px-3 py-2 bg-black/40 rounded text-teal-300 border border-white/5 font-mono shadow-inner">ollama</code></p>
+                                </div>
+                                <div class="bg-white/10 p-5 rounded-xl border border-white/10 shadow-inner">
+                                    <p class="text-xs font-bold text-slate-300 uppercase tracking-widest mb-3">If using Cloud (OpenRouter)</p>
+                                    <p class="text-sm text-slate-400"><span class="font-medium text-white">URL:</span> <br><code class="mt-1 block px-3 py-2 bg-black/40 rounded text-teal-300 border border-white/5 font-mono shadow-inner">https://openrouter.ai/api/v1</code></p>
+                                    <p class="text-sm text-slate-400 mt-3"><span class="font-medium text-white">Key:</span> <br><em class="mt-1 block px-3 py-2 text-slate-500">(Paste your copied key here)</em></p>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+
+            </div>
+        </section>
+        
+        <footer class="text-center text-sm text-slate-500 pb-12">
+            <p class="font-medium">Seaynic Labs &copy; 2026</p>
+            <p class="mt-2">Powered by the LLM+Me Recommendation Engine</p>
+        </footer>
+    </main>
+</body>
+</html>

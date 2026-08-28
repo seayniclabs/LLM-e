@@ -1,0 +1,112 @@
+{
+  "hardware": {
+    "os": "Darwin",
+    "release": "25.5.0",
+    "arch": "arm64",
+    "cpu_cores_physical": 12,
+    "cpu_cores_logical": 12,
+    "ram_total_gb": 24.0,
+    "ram_available_gb": 5.49,
+    "disk_free_gb": 73.02,
+    "hardware_acceleration": "Apple Silicon (Metal/NPU)"
+  },
+  "recommendations": {
+    "cloud": [
+      {
+        "name": "Llama 3 70B",
+        "provider": "NVIDIA NIM",
+        "speed": 8,
+        "intelligence": 9,
+        "ease": 9,
+        "rate_limit": 7,
+        "reason": "Excellent balance of reasoning power and fast generation speed on NVIDIA's free tier.",
+        "url": "https://build.nvidia.com",
+        "domain": "nvidia.com",
+        "score": 33
+      },
+      {
+        "name": "Mixtral 8x7B",
+        "provider": "Groq",
+        "speed": 10,
+        "intelligence": 8,
+        "ease": 9,
+        "rate_limit": 6,
+        "reason": "Runs on Groq's LPU for blazing fast generation speeds, though free limits can be hit quickly.",
+        "url": "https://console.groq.com",
+        "domain": "groq.com",
+        "score": 33
+      },
+      {
+        "name": "Llama 3 8B",
+        "provider": "Groq",
+        "speed": 10,
+        "intelligence": 7,
+        "ease": 10,
+        "rate_limit": 6,
+        "reason": "Incredibly fast and lightweight model perfect for instant conversational responses on Groq.",
+        "url": "https://console.groq.com",
+        "domain": "groq.com",
+        "score": 33
+      },
+      {
+        "name": "Qwen 2.5 72B",
+        "provider": "Together AI",
+        "speed": 7,
+        "intelligence": 9,
+        "ease": 8,
+        "rate_limit": 9,
+        "reason": "A powerful open-weights model available with generous free credits and high rate limits on Together AI.",
+        "url": "https://api.together.ai",
+        "domain": "together.ai",
+        "score": 33
+      },
+      {
+        "name": "Gemma 2 9B",
+        "provider": "Hugging Face",
+        "speed": 9,
+        "intelligence": 7,
+        "ease": 8,
+        "rate_limit": 8,
+        "reason": "A highly efficient model from Google that punches far above its weight class on HF free tier.",
+        "url": "https://huggingface.co",
+        "domain": "huggingface.co",
+        "score": 32
+      }
+    ],
+    "local": [
+      {
+        "name": "Llama 3 8B (Q4)",
+        "min_ram_gb": 8,
+        "speed": 9,
+        "intelligence": 8,
+        "ease": 8,
+        "reason": "Requires at least 8GB RAM, making it the perfect lightweight but highly capable daily driver for your machine.",
+        "url": "https://ollama.com/library/llama3",
+        "domain": "ollama.com",
+        "score": 27
+      },
+      {
+        "name": "Mistral 7B (Q4)",
+        "min_ram_gb": 8,
+        "speed": 10,
+        "intelligence": 7,
+        "ease": 8,
+        "reason": "Extremely fast text generation that runs comfortably within your available system memory.",
+        "url": "https://ollama.com/library/mistral",
+        "domain": "ollama.com",
+        "score": 27
+      },
+      {
+        "name": "Phi-3 Mini (4B)",
+        "min_ram_gb": 4,
+        "speed": 10,
+        "intelligence": 6,
+        "ease": 9,
+        "reason": "Microsoft's tiny powerhouse runs incredibly fast even on older or lower-memory devices.",
+        "url": "https://ollama.com/library/phi3",
+        "domain": "ollama.com",
+        "score": 27
+      }
+    ]
+  }
+}
