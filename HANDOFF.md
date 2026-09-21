@@ -1,16 +1,33 @@
-# LLM-e
-**Cross-Platform Hardware Scanner and AI Model Recommender Module**
+# LLM+Me Engine Handoff
 
-## Project Overview
-LLM-e is a standalone, distributable Python module designed to be hardware and software agnostic (macOS, Windows, Linux). It profiles the local device's hardware, queries cloud AI model APIs (like NVIDIA NIM), and filters local models that fit and run with conversational speed on the scanned hardware.
+**Project:** LLM-e
+**Status:** Production Ready (Open Source)
+**Location:** `~/Projects/LLM-e`
+**GitHub:** `https://github.com/seayniclabs/LLM-e`
 
-It outputs professional-grade HTML instructions to help human users install the recommended models, and generates system-readable JSON configs for orchestration layers.
+## Overview
+LLM+Me Engine is a personalized, hardware-agnostic AI model recommendation engine designed to guide non-technical users in selecting the right open-source or commercial models for their local environment (Ollama) or cloud (OpenRouter).
 
-## Core Features
-- Hardware scanning (`psutil`, platform APIs) for CPU, RAM, and Disk space.
-- Cloud Model Discovery (Top 5 fast, smart, easy-to-use).
-- Local Model Capability matching (Strict constraints for conversational speed based on hardware).
-- Clean, overwrite-only HTML documentation generator.
+## Current State
+- ✅ CLI tool successfully executes system discovery and writes HTML reports
+- ✅ Premium Seaynic Labs brand UI (Navy/Teal) using glassmorphism
+- ✅ Code committed to Git and pushed to `origin/main`
+- ❌ NOT in CMDB (claimed but not actually added to Bridge products API)
+- ❌ Missing GPU detection (only system RAM, no VRAM)
+- ❌ Hardcoded cloud model lists (will go stale)
+- ❌ No install automation (manual instructions only)
+- ❌ No performance benchmarking
+- 📋 **Enhancement task created: #1835** (TALOS, autonomous execution)
 
-## Status
-- Initializing (Phase 1)
+## Next Action
+- **Task #1835:** TALOS to execute 5-feature enhancement suite (see TALOS-BRIEF.md)
+- Autonomous execution with proven receipts (3-5 days timeline)
+- TALOS executor FIXED: Now uses ask_claude wrapper with subscription-first fallback chains (Sonnet → Haiku → Opus → Bedrock)
+
+## Blockers
+None.
+
+## Phases
+Phase 1: CLI and UI architecture (Complete)
+Phase 2: Productization and CMDB integration (Complete)
+Phase 3: Enhancement Suite (Task #1835, In Queue)

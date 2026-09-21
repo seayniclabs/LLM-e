@@ -1,17 +1,17 @@
 {
   "hardware": {
     "os": "Darwin",
-    "release": "25.5.0",
+    "release": "25.6.0",
     "arch": "arm64",
     "cpu_cores_physical": 12,
     "cpu_cores_logical": 12,
     "ram_total_gb": 24.0,
-    "ram_available_gb": 3.76,
-    "disk_free_gb": 68.38,
+    "ram_available_gb": 3.28,
+    "disk_free_gb": 136.18,
     "gpu_type": "Apple Silicon",
     "vram_gb": 24.0,
     "hardware_acceleration": "Apple Silicon (Metal/NPU) - Apple M4 Pro",
-    "driver_version": "26.5.2"
+    "driver_version": "26.6.2"
   },
   "recommendations": {
     "cloud": [
