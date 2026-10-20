@@ -47,7 +47,9 @@ def test_schema_files_are_valid_draft_2020_12(path):
 
 
 def test_schemas_are_versioned_in_their_ids():
-    for path in [PROFILE_SCHEMA_PATH, REGISTRY_SCHEMA_PATH, SIGNATURE_SCHEMA_PATH]:
+    # Profile schema 1.1 adds the subscription_cli kind (additive minor). Registry and signature stay at 1.0.
+    assert "-1.1" in load(PROFILE_SCHEMA_PATH)["$id"]
+    for path in [REGISTRY_SCHEMA_PATH, SIGNATURE_SCHEMA_PATH]:
         assert "-1.0" in load(path)["$id"]
 
 
@@ -81,7 +83,36 @@ def test_profile_schema_lists_all_required_kinds():
         "openai_compatible",
         "anthropic",
         "openrouter",
+        "subscription_cli",
     }
+
+
+def test_valid_subscription_profile_sample_passes():
+    profile = load(EXAMPLES / "profile.subscription.valid.json")
+    assert validate_profile(profile) == []
+    assert {t["cli"] for t in profile["targets"] if t["kind"] == "subscription_cli"} == {"claude", "cursor"}
+
+
+def test_subscription_target_takes_no_key_and_no_address(profile):
+    profile = load(EXAMPLES / "profile.subscription.valid.json")
+    t = target(profile, "claude-subscription")
+    t["key_ref"] = {"service": "com.seaynic.llme.provider", "account": "anthropic"}
+    assert validate_profile(profile)
+    t["key_ref"] = None
+    t["endpoint"] = "https://api.anthropic.com"
+    assert validate_profile(profile)
+
+
+def test_cli_field_is_only_for_subscription_targets(profile):
+    profile = copy.deepcopy(profile)
+    target(profile, "openrouter-main")["cli"] = "claude"
+    assert validate_profile(profile)
+
+
+def test_subscription_target_needs_a_known_cli():
+    profile = load(EXAMPLES / "profile.subscription.valid.json")
+    target(profile, "claude-subscription")["cli"] = "codex"
+    assert validate_profile(profile)
 
 
 # --- invalid samples: every file must fail -----------------------------------

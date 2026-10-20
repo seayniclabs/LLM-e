@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://seayniclabs.com/schemas/llme/provider-profile-1.0.json",
+  "$id": "https://seayniclabs.com/schemas/llme/provider-profile-1.1.json",
   "title": "LLM-e provider profile",
   "description": "The file LLM-e writes after setup and host apps (for example Sonique's provider adapters) read. Holds the AI connections a person has set up, which one handles everyday and harder questions, and the result of the last test. Never holds an API key: keys stay in the macOS Keychain and are referenced by key_ref.",
   "type": "object",
@@ -99,7 +99,7 @@
       "properties": {
         "id": {"$ref": "#/$defs/targetId"},
         "kind": {
-          "enum": ["ollama_local", "ollama_remote", "apple_intelligence", "openai_compatible", "anthropic", "openrouter"]
+          "enum": ["ollama_local", "ollama_remote", "apple_intelligence", "openai_compatible", "anthropic", "openrouter", "subscription_cli"]
         },
         "label": {"type": "string", "minLength": 1, "maxLength": 80},
         "source": {
@@ -109,10 +109,24 @@
         "endpoint": {"type": ["string", "null"], "format": "uri", "maxLength": 300},
         "model": {"type": ["string", "null"], "minLength": 1, "maxLength": 200},
         "key_ref": {"oneOf": [{"$ref": "#/$defs/keyRef"}, {"type": "null"}]},
+        "cli": {"enum": ["claude", "cursor"], "description": "Only with kind subscription_cli: the vendor's official command-line tool, found on this Mac's PATH. The person signs in to that tool; LLM-e and hosts never see its login. Gemini is not allowed: its terms prohibit consumer-subscription use, so it stays an API-key target."},
         "last_test": {"oneOf": [{"$ref": "#/$defs/lastTest"}, {"type": "null"}]},
         "performance": {"oneOf": [{"$ref": "#/$defs/performance"}, {"type": "null"}]}
       },
       "allOf": [
+        {
+          "if": {"properties": {"kind": {"const": "subscription_cli"}}, "required": ["kind"]},
+          "then": {
+            "required": ["cli"],
+            "properties": {
+              "source": {"const": "this_mac"},
+              "endpoint": {"type": "null"},
+              "model": {"oneOf": [{"type": "null"}, {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@-]*$", "maxLength": 200}]},
+              "key_ref": {"type": "null"}
+            }
+          },
+          "else": {"not": {"required": ["cli"]}}
+        },
         {
           "if": {"properties": {"kind": {"const": "ollama_local"}}, "required": ["kind"]},
           "then": {
