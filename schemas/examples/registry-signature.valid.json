@@ -1,7 +1,7 @@
 {
   "registry_file": "model-registry.json",
-  "registry_version": "2026.10.1",
-  "sha256": "6d737112ce7c7a78daf399250a01b784b139b99e67ae10a4d99afdcd0169524f",
+  "registry_version": "2026.10.2",
+  "sha256": "dedff0e5a9c7fceb20c5f1798467bb80f79b381863fea832566b84039b07ac0f",
   "signature_format": "cms-detached",
   "signature_file": "model-registry.json.p7s",
   "signer": {

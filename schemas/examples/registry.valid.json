@@ -1,34 +1,34 @@
 {
   "schema_version": "1.0.0",
-  "registry_version": "2026.10.1",
-  "published_date": "2026-10-19",
+  "registry_version": "2026.10.2",
+  "published_date": "2026-10-20",
   "models": [
     {
-      "id": "llama-3-2-3b",
-      "tag": "llama3.2:3b",
-      "family": "Llama 3.2",
-      "parameters": "3B",
-      "size_on_disk_gb": 2.0,
+      "id": "qwen3-1-7b",
+      "tag": "qwen3:1.7b",
+      "family": "Qwen 3",
+      "parameters": "1.7B",
+      "size_on_disk_gb": 1.4,
       "min_memory_gb": 8,
       "acceleration": "metal_recommended",
       "licence": {
-        "id": "llama-3.2-community",
-        "name": "Llama 3.2 Community Licence",
-        "url": "https://www.llama.com/llama3_2/license/",
-        "notice_required": true,
-        "notice_text": "Built with Llama"
+        "id": "Apache-2.0",
+        "name": "Apache License 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0",
+        "notice_required": false,
+        "notice_text": null
       },
       "recommended_for": [
-        "Everyday questions on 8 GB Macs",
-        "Quick drafting and summaries"
+        "Everyday requests on 8 GB Macs",
+        "Fastest replies"
       ]
     },
     {
-      "id": "qwen2-5-7b",
-      "tag": "qwen2.5:7b",
-      "family": "Qwen 2.5",
-      "parameters": "7B",
-      "size_on_disk_gb": 4.7,
+      "id": "qwen3-4b",
+      "tag": "qwen3:4b",
+      "family": "Qwen 3",
+      "parameters": "4B",
+      "size_on_disk_gb": 2.5,
       "min_memory_gb": 16,
       "acceleration": "metal_recommended",
       "licence": {
@@ -39,27 +39,28 @@
         "notice_text": null
       },
       "recommended_for": [
-        "Harder questions on 16 GB Macs",
-        "Coding help"
+        "Everyday requests on 16 GB Macs",
+        "Better at unclear requests"
       ]
     },
     {
-      "id": "llama-3-1-8b",
-      "tag": "llama3.1:8b",
-      "family": "Llama 3.1",
-      "parameters": "8B",
-      "size_on_disk_gb": 4.9,
-      "min_memory_gb": 16,
+      "id": "qwen3-14b",
+      "tag": "qwen3:14b",
+      "family": "Qwen 3",
+      "parameters": "14B",
+      "size_on_disk_gb": 9.3,
+      "min_memory_gb": 32,
       "acceleration": "metal_recommended",
       "licence": {
-        "id": "llama-3.1-community",
-        "name": "Llama 3.1 Community Licence",
-        "url": "https://www.llama.com/llama3_1/license/",
-        "notice_required": true,
-        "notice_text": "Built with Llama"
+        "id": "Apache-2.0",
+        "name": "Apache License 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0",
+        "notice_required": false,
+        "notice_text": null
       },
       "recommended_for": [
-        "Harder questions on 16 GB Macs"
+        "Harder questions on 32 GB Macs",
+        "Most careful with unclear requests"
       ]
     }
   ]

@@ -237,6 +237,7 @@ def test_unknown_top_level_field_rejected(profile):
 
 def test_notice_required_needs_notice_text(registry):
     registry = copy.deepcopy(registry)
+    registry["models"][0]["licence"]["notice_required"] = True
     registry["models"][0]["licence"]["notice_text"] = None
     assert any("notice_text" in e for e in validate_registry(registry))
 
