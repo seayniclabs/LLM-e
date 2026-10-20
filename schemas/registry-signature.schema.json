@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://seayniclabs.com/schemas/llme/registry-signature-1.0.json",
+  "title": "LLM-e model registry signature metadata",
+  "description": "Sidecar metadata for a detached signature over model-registry.json. The signature itself is a CMS (PKCS#7) detached file, model-registry.json.p7s, made with Charlie's Developer ID Application certificate. A signature cannot sit inside the file it signs, so the metadata lives in this separate JSON file. Hosts verify the .p7s against the registry bytes before use and check sha256 here. See docs/host-apps.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["registry_file", "registry_version", "sha256", "signature_format", "signature_file", "signer", "signed_at", "status"],
+  "properties": {
+    "registry_file": {"const": "model-registry.json"},
+    "registry_version": {"type": "string", "pattern": "^\\d{4}\\.\\d{1,2}\\.\\d+$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$", "description": "SHA-256 of the exact bytes of model-registry.json."},
+    "signature_format": {"const": "cms-detached", "description": "CMS / PKCS#7 signature, detached. Verifiable with Security.framework (SecCMSVerify) in Swift or with the security tool on macOS."},
+    "signature_file": {"const": "model-registry.json.p7s"},
+    "signer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identity", "team_id", "certificate_sha256"],
+      "properties": {
+        "identity": {"const": "Developer ID Application: Charles Seay (7NSS5CJL9E)"},
+        "team_id": {"const": "7NSS5CJL9E"},
+        "certificate_sha256": {"type": "string", "pattern": "^[0-9A-F]{64}$", "description": "Fingerprint of the signing certificate, so hosts can pin it."}
+      }
+    },
+    "signed_at": {"type": "string", "format": "date-time"},
+    "status": {
+      "enum": ["example-unsigned", "signed"],
+      "description": "example-unsigned marks sample files in this repo. Real release metadata must be signed."
+    }
+  }
+}

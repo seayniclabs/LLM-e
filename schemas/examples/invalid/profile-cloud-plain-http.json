@@ -1,0 +1,82 @@
+{
+  "schema_version": "1.0.0",
+  "generated_by": {
+    "tool": "llme",
+    "version": "0.1.0"
+  },
+  "created_at": "2026-10-19T09:00:00Z",
+  "updated_at": "2026-10-19T09:12:00Z",
+  "registry": {
+    "version": "2026.10.1",
+    "date": "2026-10-19"
+  },
+  "targets": [
+    {
+      "id": "this-mac-ollama",
+      "kind": "ollama_local",
+      "label": "Ollama on this Mac",
+      "source": "this_mac",
+      "endpoint": "http://localhost:11434",
+      "model": "llama3.2:3b",
+      "key_ref": null,
+      "last_test": {
+        "status": "ok",
+        "reason": "Replied in 0.8 seconds.",
+        "tested_at": "2026-10-19T09:10:00Z"
+      },
+      "performance": {
+        "tokens_per_second": 42.5,
+        "time_to_first_token_ms": 310,
+        "measured_at": "2026-10-19T09:11:00Z"
+      }
+    },
+    {
+      "id": "study-ollama",
+      "kind": "ollama_remote",
+      "label": "Ollama on the study Mac",
+      "source": "network_scan",
+      "endpoint": "http://192.168.1.20:11434",
+      "model": "qwen2.5:7b",
+      "key_ref": null,
+      "last_test": {
+        "status": "failed",
+        "reason": "Nothing answered on port 11434. Check that Ollama is running on that Mac.",
+        "tested_at": "2026-10-19T09:08:00Z"
+      },
+      "performance": null
+    },
+    {
+      "id": "apple-intelligence",
+      "kind": "apple_intelligence",
+      "label": "Apple Intelligence",
+      "source": "apple_system",
+      "endpoint": null,
+      "model": null,
+      "key_ref": null,
+      "last_test": null,
+      "performance": null
+    },
+    {
+      "id": "openrouter-main",
+      "kind": "openrouter",
+      "label": "OpenRouter",
+      "source": "manual",
+      "endpoint": "http://openrouter.ai/api/v1",
+      "model": "meta-llama/llama-3.1-70b-instruct",
+      "key_ref": {
+        "service": "com.seaynic.llme.provider",
+        "account": "openrouter"
+      },
+      "last_test": {
+        "status": "ok",
+        "reason": "Replied in 1.9 seconds.",
+        "tested_at": "2026-10-19T09:09:00Z"
+      },
+      "performance": null
+    }
+  ],
+  "roles": {
+    "everyday": "this-mac-ollama",
+    "harder": "openrouter-main"
+  }
+}

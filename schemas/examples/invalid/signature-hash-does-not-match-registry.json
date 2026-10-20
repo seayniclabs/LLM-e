@@ -1,0 +1,14 @@
+{
+  "registry_file": "model-registry.json",
+  "registry_version": "2026.10.1",
+  "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "signature_format": "cms-detached",
+  "signature_file": "model-registry.json.p7s",
+  "signer": {
+    "identity": "Developer ID Application: Charles Seay (7NSS5CJL9E)",
+    "team_id": "7NSS5CJL9E",
+    "certificate_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "signed_at": "2026-10-19T12:00:00Z",
+  "status": "example-unsigned"
+}

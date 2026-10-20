@@ -14,8 +14,17 @@ requires-python = ">=3.8"
 dependencies = [
     "psutil",
     "requests",
-    "jinja2"
+    "jinja2",
+    "jsonschema",
 ]
 
 [project.scripts]
 llme = "llme.cli:main"
+
+[tool.setuptools]
+packages = ["llme"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
+]

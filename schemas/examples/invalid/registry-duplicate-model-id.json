@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0.0",
+  "registry_version": "2026.10.1",
+  "published_date": "2026-10-19",
+  "models": [
+    {
+      "id": "llama-3-2-3b",
+      "tag": "llama3.2:3b",
+      "family": "Llama 3.2",
+      "parameters": "3B",
+      "size_on_disk_gb": 2.0,
+      "min_memory_gb": 8,
+      "acceleration": "metal_recommended",
+      "licence": {
+        "id": "llama-3.2-community",
+        "name": "Llama 3.2 Community Licence",
+        "url": "https://www.llama.com/llama3_2/license/",
+        "notice_required": true,
+        "notice_text": "Built with Llama"
+      },
+      "recommended_for": [
+        "Everyday questions on 8 GB Macs",
+        "Quick drafting and summaries"
+      ]
+    },
+    {
+      "id": "qwen2-5-7b",
+      "tag": "qwen2.5:7b",
+      "family": "Qwen 2.5",
+      "parameters": "7B",
+      "size_on_disk_gb": 4.7,
+      "min_memory_gb": 16,
+      "acceleration": "metal_recommended",
+      "licence": {
+        "id": "Apache-2.0",
+        "name": "Apache License 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0",
+        "notice_required": false,
+        "notice_text": null
+      },
+      "recommended_for": [
+        "Harder questions on 16 GB Macs",
+        "Coding help"
+      ]
+    },
+    {
+      "id": "llama-3-2-3b",
+      "tag": "llama3.1:8b",
+      "family": "Llama 3.1",
+      "parameters": "8B",
+      "size_on_disk_gb": 4.9,
+      "min_memory_gb": 16,
+      "acceleration": "metal_recommended",
+      "licence": {
+        "id": "llama-3.1-community",
+        "name": "Llama 3.1 Community Licence",
+        "url": "https://www.llama.com/llama3_1/license/",
+        "notice_required": true,
+        "notice_text": "Built with Llama"
+      },
+      "recommended_for": [
+        "Harder questions on 16 GB Macs"
+      ]
+    }
+  ]
+}
