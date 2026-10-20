@@ -1,3 +1,6 @@
 __pycache__/
 *.egg-info/
 .pytest_cache/
+# local scan output (hardware profile)
+llme_system_config.json
+llme_report.html

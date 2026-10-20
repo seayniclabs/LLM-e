@@ -77,16 +77,19 @@ def validate_registry(data: Any) -> List[str]:
     return errors
 
 
-def validate_signature_metadata(meta: Any, registry_bytes: bytes) -> List[str]:
+def validate_signature_metadata(meta: Any, registry_bytes: bytes, require_signed: bool = False) -> List[str]:
     """Check signature sidecar metadata against the registry file it describes.
 
     This checks the metadata and the hash only. The CMS signature itself is
     verified by the host with Security.framework (Swift) or the security tool
-    on macOS. See docs/host-apps.md.
+    on macOS. See docs/host-apps.md. A production caller passes require_signed=True,
+    so an "example-unsigned" sidecar is refused.
     """
     errors = _schema_errors(_load_validator(SIGNATURE_SCHEMA_PATH), meta)
     if errors or not isinstance(meta, dict):
         return errors
+    if require_signed and meta.get("status") != "signed":
+        errors.append(f"status: registry is {meta.get('status')!r}, not signed")
 
     actual = hashlib.sha256(registry_bytes).hexdigest()
     if actual != meta["sha256"]:

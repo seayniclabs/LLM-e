@@ -1,3 +1,5 @@
+import sys
+import re
 import json
 import os
 import platform
@@ -62,17 +64,21 @@ def pull_model(model_name):
     return False
 
 
-def setup_cloud_provider(provider, api_key):
+def setup_cloud_provider(provider):
     """
-    Persists cloud provider configuration (provider name + API key) to
-    ~/.llme/config.json so other llme commands can reuse it.
+    Records a cloud provider in ~/.llme/config.json by Keychain reference only. The key itself never touches a file,
+    a log or the command line (the LLM-e contract): it goes into the macOS Keychain under the provider namespace that
+    host apps check (com.seaynic.llme.provider.<id>), and `security` prompts for it without echo.
     """
     if not provider:
         print("No provider specified; skipping cloud provider setup.")
         return None
+    if not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,39}", provider):
+        print(f"Provider id must be lowercase letters, digits and dashes: {provider!r}")
+        return None
 
-    os.makedirs(CONFIG_DIR, exist_ok=True)
-
+    key_ref = {"service": f"com.seaynic.llme.provider.{provider}", "account": "default"}
+    os.makedirs(CONFIG_DIR, mode=0o700, exist_ok=True)
     config = {}
     if os.path.exists(CONFIG_FILE):
         with open(CONFIG_FILE, "r") as f:
@@ -80,15 +86,18 @@ def setup_cloud_provider(provider, api_key):
                 config = json.load(f)
             except json.JSONDecodeError:
                 config = {}
-
     providers = config.setdefault("providers", {})
-    providers[provider] = {"api_key": api_key}
-
-    with open(CONFIG_FILE, "w") as f:
+    providers[provider] = {"key_ref": key_ref}          # replaces any old entry, including a plaintext api_key from earlier versions
+    fd = os.open(CONFIG_FILE, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, "w") as f:
         json.dump(config, f, indent=2)
-
-    # Restrict permissions since the file may contain an API key.
     os.chmod(CONFIG_FILE, 0o600)
+    print(f"Saved the Keychain reference for provider '{provider}' to {CONFIG_FILE}")
 
-    print(f"Saved configuration for provider '{provider}' to {CONFIG_FILE}")
+    cmd = ["security", "add-generic-password", "-U", "-s", key_ref["service"], "-a", key_ref["account"], "-w"]
+    if sys.stdin.isatty():
+        print("Paste the API key when asked (it is not shown and is stored only in your Keychain).")
+        subprocess.run(cmd, check=False)          # -w with no value: security prompts for the key itself
+    else:
+        print("Store the key in your Keychain by running (it will prompt for the key):\n  " + " ".join(cmd))
     return CONFIG_FILE

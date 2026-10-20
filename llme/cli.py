@@ -61,7 +61,7 @@ def run_install(args):
         pull_model(args.local)
 
     if args.cloud:
-        setup_cloud_provider(args.cloud, args.api_key)
+        setup_cloud_provider(args.cloud)
 
     if not args.local and not args.cloud:
         install_ollama()
@@ -86,7 +86,6 @@ def build_parser():
     install_parser = subparsers.add_parser("install", help="Install local/cloud AI providers")
     install_parser.add_argument("--local", metavar="MODEL", help="Ollama model to install and pull, e.g. llama3")
     install_parser.add_argument("--cloud", metavar="PROVIDER", help="Cloud provider to configure, e.g. openrouter")
-    install_parser.add_argument("--api-key", metavar="KEY", help="API key for the cloud provider")
 
     benchmark_parser = subparsers.add_parser("benchmark", help="Benchmark a local model's inference performance")
     benchmark_parser.add_argument("model", help="Model name to benchmark, e.g. llama3")

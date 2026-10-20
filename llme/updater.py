@@ -7,6 +7,15 @@ import logging
 REGISTRY_URL = "https://raw.githubusercontent.com/seayniclabs/llm-me/main/llme/registry.json"
 CACHE_FILE = os.path.join(os.path.dirname(__file__), "registry.json")
 CACHE_EXPIRY_SECONDS = 7 * 24 * 60 * 60  # 7 days
+MAX_BYTES = 2 * 1024 * 1024
+# Pre-Phase-1 registry (fields min_ram_gb, speed, intelligence, ease). The Phase-1 signed registry is
+# schemas/model-registry.schema.json; wiring the two together is Phase 2.
+
+
+def _plausible(data):
+    """The shape this module and discovery_local.py read. Anything else is refused and the last good cache is kept."""
+    return isinstance(data, dict) and all(isinstance(data.get(k), list) for k in ("cloud", "local")) and \
+        all(isinstance(m, dict) for k in ("cloud", "local") for m in data[k])
 
 def get_registry():
     """
@@ -28,10 +37,15 @@ def get_registry():
         try:
             req = urllib.request.Request(REGISTRY_URL, headers={'User-Agent': 'LLM+Me-Updater'})
             with urllib.request.urlopen(req, timeout=5) as response:
-                if response.status == 200:
-                    data = json.loads(response.read().decode('utf-8'))
-                    with open(CACHE_FILE, 'w') as f:
+                body = response.read(MAX_BYTES + 1) if response.status == 200 else b""
+                data = json.loads(body.decode('utf-8')) if body and len(body) <= MAX_BYTES else None
+                if _plausible(data):
+                    tmp = CACHE_FILE + ".tmp"
+                    with open(tmp, 'w') as f:
                         json.dump(data, f, indent=4)
+                    os.replace(tmp, CACHE_FILE)          # never leave a half-written cache
+                else:
+                    logging.warning("Remote registry was missing, too large or the wrong shape; keeping the local cache.")
         except Exception as e:
             logging.warning(f"Could not fetch remote registry: {e}. Falling back to local cache.")
     
