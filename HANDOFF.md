@@ -21,4 +21,4 @@ Earlier on 2026-10-19 it was scrapped as a stand-alone MCP product ("not an MCP,
 ## Next
 1. **Phase 1 (allowed now):** profile schema (versioned JSON Schema) and model registry format, signed. Sonique's provider adapters (FR-12) read connections from it.
 2. Everything else (discovery, installer, Swift setup in Sonique) waits for Sonique's Phase 2, after the 2026-12-15 review.
-3. Open: which key signs the registry; 8/16 GB test Macs; Charlie's sign-off; an Office Hours doc for the gate.
+3. Registry signing: Charlie's Developer ID (decided 2026-10-19). Open: 8/16 GB test Macs; Charlie's sign-off; an Office Hours doc for the gate.
