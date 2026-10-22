@@ -4,3 +4,4 @@ __pycache__/
 # local scan output (hardware profile)
 llme_system_config.json
 llme_report.html
+.b3ck-drift-qa-report.json
