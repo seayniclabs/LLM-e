@@ -6,6 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "llme"
 version = "0.1.0"
 description = "Cross-Platform Hardware Scanner and AI Model Recommender"
+license = {text = "MIT"}
 authors = [
     {name = "Charlie Seay"}
 ]

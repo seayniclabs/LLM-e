@@ -13,6 +13,7 @@ provider profile other tools can use. macOS first. Sonique uses the same profile
 git clone https://github.com/seayniclabs/LLM-e.git
 cd LLM-e
 python3 -m venv .venv
+.venv/bin/pip install --upgrade pip   # macOS's bundled pip 21 can't install this project
 .venv/bin/pip install -e .
 ```
 
@@ -39,3 +40,7 @@ key kept in the system keychain.
 ```bash
 .venv/bin/pip install pytest && .venv/bin/python -m pytest -q
 ```
+
+## Licence
+
+MIT. See [LICENSE](LICENSE).
