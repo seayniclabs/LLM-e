@@ -79,12 +79,62 @@ def test_profile_schema_lists_all_required_kinds():
     assert set(kinds) == {
         "ollama_local",
         "ollama_remote",
+        "openai_local",
         "apple_intelligence",
         "openai_compatible",
         "anthropic",
         "openrouter",
         "subscription_cli",
     }
+
+
+def test_openai_local_target_validates(profile):
+    profile = copy.deepcopy(profile)
+    profile["targets"].append({
+        "id": "m5-mlx",
+        "kind": "openai_local",
+        "label": "MLX on the M5",
+        "source": "typed_address",
+        "endpoint": "http://192.168.68.67:11600",
+        "model": "mlx-community/Qwen3.6-35B-A3B-4bit",
+        "key_ref": None,
+        "last_test": None,
+        "performance": None,
+    })
+    profile["roles"]["everyday"] = "m5-mlx"
+    assert validate_profile(profile) == []
+
+
+def test_openai_local_with_key_ref_is_rejected(profile):
+    profile = copy.deepcopy(profile)
+    profile["targets"].append({
+        "id": "m5-mlx",
+        "kind": "openai_local",
+        "label": "MLX on the M5",
+        "source": "typed_address",
+        "endpoint": "http://192.168.68.67:11600",
+        "model": "mlx-community/Qwen3.6-35B-A3B-4bit",
+        "key_ref": {"service": "com.seaynic.llme.provider", "account": "x"},
+        "last_test": None,
+        "performance": None,
+    })
+    assert any("key_ref" in e for e in validate_profile(profile))
+
+
+def test_openai_local_endpoint_without_port_is_rejected(profile):
+    profile = copy.deepcopy(profile)
+    profile["targets"].append({
+        "id": "m5-mlx",
+        "kind": "openai_local",
+        "label": "MLX on the M5",
+        "source": "typed_address",
+        "endpoint": "http://192.168.68.67",
+        "model": "mlx-community/Qwen3.6-35B-A3B-4bit",
+        "key_ref": None,
+        "last_test": None,
+        "performance": None,
+    })
+    assert any("endpoint" in e for e in validate_profile(profile))
 
 
 def test_valid_subscription_profile_sample_passes():

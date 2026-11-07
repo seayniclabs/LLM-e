@@ -99,7 +99,7 @@
       "properties": {
         "id": {"$ref": "#/$defs/targetId"},
         "kind": {
-          "enum": ["ollama_local", "ollama_remote", "apple_intelligence", "openai_compatible", "anthropic", "openrouter", "subscription_cli"]
+          "enum": ["ollama_local", "ollama_remote", "openai_local", "apple_intelligence", "openai_compatible", "anthropic", "openrouter", "subscription_cli"]
         },
         "label": {"type": "string", "minLength": 1, "maxLength": 80},
         "source": {
@@ -145,6 +145,17 @@
               "source": {"enum": ["network_scan", "typed_address"]},
               "endpoint": {"type": "string", "pattern": "^http://[A-Za-z0-9.-]+:11434$"},
               "model": {"$ref": "#/$defs/ollamaTag"},
+              "key_ref": {"type": "null"}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"kind": {"const": "openai_local"}}, "required": ["kind"]},
+          "then": {
+            "properties": {
+              "source": {"enum": ["this_mac", "network_scan", "typed_address"]},
+              "endpoint": {"type": "string", "pattern": "^https?://[A-Za-z0-9.-]+:\\d{1,5}$"},
+              "model": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@-]*$", "maxLength": 200},
               "key_ref": {"type": "null"}
             }
           }
