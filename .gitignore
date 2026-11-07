@@ -1,4 +1,6 @@
 __pycache__/
+build/
+dist/
 *.egg-info/
 .pytest_cache/
 # local scan output (hardware profile)

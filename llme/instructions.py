@@ -205,6 +205,34 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             </div>
         </section>
 
+        <!-- Already running on this machine -->
+        <section class="glass-card rounded-3xl p-8 md:p-10">
+            <h2 class="text-2xl font-semibold text-white mb-3">Already On This Machine</h2>
+            {% if installed %}
+            <p class="text-slate-400 mb-8 max-w-3xl leading-relaxed text-lg">These servers answered on this machine while the scan ran, so there is nothing to install. Ask them for the model names below.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {% for entry in installed %}
+                <div class="glass-card rounded-2xl p-6 relative overflow-hidden">
+                    <h3 class="text-lg font-semibold text-white">{{ entry.server }}</h3>
+                    <p class="text-teal-300 text-sm font-mono mt-1 break-all">{{ entry.url }}</p>
+                    {% if entry.models %}
+                    <p class="text-slate-300 text-sm mt-4">{{ entry.model_count }} model{{ '' if entry.model_count == 1 else 's' }} ready:</p>
+                    <ul class="mt-2 space-y-1 text-sm text-slate-400">
+                        {% for m in entry.models %}
+                        <li class="font-mono">{{ m.name }}{% if m.size_gb %} <span class="text-slate-500">({{ m.size_gb }} GB)</span>{% endif %}</li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-amber-400/80 text-sm mt-4">Running, but holding no models yet.</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-slate-400 max-w-3xl leading-relaxed text-lg">Nothing answered on the local AI ports ({% for entry in known_servers %}{{ entry.server }} {{ entry.port }}{% if not loop.last %}, {% endif %}{% endfor %}). The recommendations below are what to install first.</p>
+            {% endif %}
+        </section>
+
         <!-- Multi-Model Routers -->
         <section class="glass-card rounded-3xl p-8 md:p-10">
             <h2 class="text-2xl font-semibold text-white mb-3">Multi-Model Routers (Bring Your Own AI)</h2>
@@ -349,15 +377,18 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 </html>
 """
 
-def generate_outputs(system_profile, cloud_models, local_models, output_dir=".", benchmarks=None):
+def generate_outputs(system_profile, cloud_models, local_models, output_dir=".", benchmarks=None, installed=None):
     """
     Generates professional HTML for humans and JSON for systems.
     Overwrites the files if they already exist. Existing benchmark results
     in the JSON config are preserved across regenerations unless overridden.
     """
+    from llme.inventory import KNOWN_SERVERS
+
     html_path = os.path.join(output_dir, "llme_report.html")
     json_path = os.path.join(output_dir, "llme_system_config.json")
 
+    installed = installed or []
     if benchmarks is None:
         benchmarks = {}
         if os.path.exists(json_path):
@@ -375,6 +406,7 @@ def generate_outputs(system_profile, cloud_models, local_models, output_dir=".",
             "cloud": cloud_models,
             "local": local_models
         },
+        "installed": installed,
         "benchmarks": benchmarks
     }
     with open(json_path, 'w') as f:
@@ -386,6 +418,8 @@ def generate_outputs(system_profile, cloud_models, local_models, output_dir=".",
         system=system_profile,
         cloud_models=cloud_models,
         local_models=local_models,
+        installed=installed,
+        known_servers=KNOWN_SERVERS,
         benchmarks=benchmarks
     )
     with open(html_path, 'w') as f:

@@ -6,7 +6,13 @@ import urllib.error
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
 BENCHMARK_PROMPT = "Explain what an operating system does in two sentences."
-CONFIG_JSON_PATH = os.path.join(os.getcwd(), "llme_system_config.json")
+CONFIG_FILENAME = "llme_system_config.json"
+
+
+def default_config_path(output_dir=None):
+    """Where the benchmark result is merged: the directory you ran the command in, never the
+    directory the process happened to start in at import time."""
+    return os.path.join(output_dir or os.getcwd(), CONFIG_FILENAME)
 
 
 def _single_run(model_name, prompt=BENCHMARK_PROMPT, timeout=120):
@@ -18,10 +24,19 @@ def _single_run(model_name, prompt=BENCHMARK_PROMPT, timeout=120):
     start = time.monotonic()
     try:
         with urllib.request.urlopen(req, timeout=timeout) as response:
-            body = json.loads(response.read().decode("utf-8"))
-    except (urllib.error.URLError, urllib.error.HTTPError) as e:
+            raw = response.read()
+    except (urllib.error.URLError, urllib.error.HTTPError, OSError) as e:
         return {"error": str(e)}
     elapsed = time.monotonic() - start
+
+    # A port that answers is not necessarily Ollama: a login page, a proxy or a JSON error body
+    # all arrive as 200. Say so, instead of raising out of the middle of a benchmark.
+    try:
+        body = json.loads(raw.decode("utf-8", "replace"))
+    except ValueError:
+        return {"error": "the server answered, but not with JSON"}
+    if not isinstance(body, dict):
+        return {"error": "the server answered with JSON that is not an object"}
 
     eval_count = body.get("eval_count")
     eval_duration_ns = body.get("eval_duration")
@@ -47,6 +62,9 @@ def benchmark_model(model_name, num_runs=3):
     over the Ollama HTTP API and measuring tokens/sec, time-to-first-token,
     and total elapsed time across num_runs, then averaging the results.
     """
+    if isinstance(num_runs, bool) or not isinstance(num_runs, int) or num_runs < 1:
+        raise ValueError(f"num_runs must be a whole number of runs, 1 or more (got {num_runs!r})")
+
     runs = []
     for i in range(num_runs):
         result = _single_run(model_name)
@@ -74,15 +92,24 @@ def benchmark_model(model_name, num_runs=3):
     }
 
 
-def update_config_with_benchmark(model_name, result, config_path=CONFIG_JSON_PATH):
+def update_config_with_benchmark(model_name, result, config_path=None):
     """
     Merges a benchmark result into llme_system_config.json under a
     `benchmarks` key, keyed by model name, without disturbing other data.
     """
+    config_path = config_path or default_config_path()
+
     config = {}
     if os.path.exists(config_path):
         with open(config_path, "r") as f:
-            config = json.load(f)
+            try:
+                config = json.load(f)
+            except ValueError as e:
+                # Never overwrite a file we could not read: it may be someone's only copy of
+                # earlier numbers, and silently replacing it loses them.
+                raise ValueError(f"{config_path} is not valid JSON ({e}); fix or delete it and retry") from None
+        if not isinstance(config, dict):
+            raise ValueError(f"{config_path} does not hold a JSON object; fix or delete it and retry")
 
     benchmarks = config.setdefault("benchmarks", {})
     benchmarks[model_name] = result
